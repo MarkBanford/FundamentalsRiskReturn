@@ -1,6 +1,7 @@
 # Worst possible return you could have seen if you bought at the high and sold at the low
 # Calmar ratio is the ratio of annualised return over trailing 3 years,divided by the max drawdown over same period
 
+
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -11,7 +12,17 @@ rets.columns = ['SmallCap', 'LargeCap']
 print(rets.index)  # should be date
 rets.index = pd.to_datetime(rets.index, format="%Y%m")
 rets.index = rets.index.to_period('M')  # converts from 1st month to just month
-print(rets.head())
+
 rets = rets / 100
-rets.plot.line()
-print(rets.loc["1975"])
+
+# Compute Wealth Index, Compute previous peaks, Compute drawdown
+
+wealth_index = 1000 * (1 + rets['LargeCap']).cumprod()
+
+previous_peaks = wealth_index.cummax()
+drawdown = (wealth_index - previous_peaks) / previous_peaks
+# drawdown.plot()
+# plt.show()
+print(drawdown.min())
+
+print(drawdown["1975":].min(), drawdown["1975":].idxmin())
